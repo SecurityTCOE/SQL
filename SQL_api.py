@@ -4,7 +4,6 @@ import joblib
 import urllib.parse
 import html
 import base64
-import io
 from sklearn.feature_extraction.text import TfidfVectorizer
 from waitress import serve
 
@@ -17,18 +16,6 @@ model_sql = joblib.load("best_model_sql_1,48,000 payloads.pkl")
 def decode_ascii_hex(encoded):
     try:
         return bytes.fromhex(encoded).decode('utf-8')
-    except:
-        return encoded
-
-def decode_octal(encoded):
-    try:
-        return ''.join([chr(int(encoded[i:i+3], 8)) for i in range(0, len(encoded), 3)])
-    except:
-        return encoded
-
-def decode_binary(encoded):
-    try:
-        return ''.join([chr(int(encoded[i:i+8], 2)) for i in range(0, len(encoded), 8)])
     except:
         return encoded
 
@@ -50,12 +37,6 @@ def decode_payload(payload, max_iterations=50):
         
         # Decode ASCII HEX
         decoded_payload = decode_ascii_hex(decoded_payload)
-        
-        # Decode Octal
-        decoded_payload = decode_octal(decoded_payload)
-        
-        # Decode Binary
-        decoded_payload = decode_binary(decoded_payload)
         
         if decoded_payload == payload:
             break
