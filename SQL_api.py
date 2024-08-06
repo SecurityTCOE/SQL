@@ -4,7 +4,6 @@ import joblib
 import urllib.parse
 import html
 import base64
-import gzip
 import io
 from sklearn.feature_extraction.text import TfidfVectorizer
 from waitress import serve
@@ -33,20 +32,6 @@ def decode_binary(encoded):
     except:
         return encoded
 
-def decode_hex(encoded):
-    try:
-        return bytes.fromhex(encoded).decode('utf-8')
-    except:
-        return encoded
-
-def decode_gzip(encoded):
-    try:
-        buf = io.BytesIO(encoded)
-        with gzip.GzipFile(fileobj=buf) as f:
-            return f.read().decode('utf-8')
-    except:
-        return encoded
-
 def decode_payload(payload, max_iterations=50):
     for _ in range(max_iterations):
         decoded_payload = payload
@@ -71,15 +56,6 @@ def decode_payload(payload, max_iterations=50):
         
         # Decode Binary
         decoded_payload = decode_binary(decoded_payload)
-        
-        # Decode Hex
-        decoded_payload = decode_hex(decoded_payload)
-        
-        # Decode Gzip
-        try:
-            decoded_payload = decode_gzip(decoded_payload.encode())
-        except:
-            pass  # Ignore errors if decoding fails
         
         if decoded_payload == payload:
             break
